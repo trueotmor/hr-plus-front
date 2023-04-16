@@ -8,5 +8,5 @@ import Catalog from './components/catalog/Catalog.vue';
 
 <style lang="scss">
 @import './style.css';
-@import './index.css'
+@import './index.css';
 </style>
