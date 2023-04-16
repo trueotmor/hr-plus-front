@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Catalog from './components/catalog/Catalog.vue';
 import Nav from './components/nav/Nav.vue';
 </script>
 

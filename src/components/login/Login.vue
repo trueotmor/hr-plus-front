@@ -74,5 +74,3 @@ const handleLogin = async () => {
         </div>
     </section>
 </template>
-
-<style scoped></style>
