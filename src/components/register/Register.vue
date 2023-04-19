@@ -19,13 +19,22 @@ const handleRegister = async () => {
     });
     router.push('/');
 }
+
+const handleForgotPassword = async () => {
+    await axios.post('/api/auth/forgot', {
+        email: form.value.email,
+    });
+    router.push('/');
+}
 </script>
  
 <template>
     <section class="h-screen">
         <div class="h-full">
-            <div class="g-6 flex h-full flex-wrap items-center justify-center lg:justify-between">
-                <div class="mb-12 md:mb-0 md:w-8/12 lg:w-5/12 xl:w-5/12">
+            <div class="flex h-full flex-auto items-center justify-center">
+                <div class="md:w-8/12 lg:w-5/12 xl:w-5/12 p-2 md:p-3">
+                    <h5>Авторизация</h5>
+                    <p>Введите e-mail и пароль для доступа к системе.</p>
                     <form @submit.prevent="handleRegister">
                         <!-- Email input -->
                         <div class="relative mb-6">

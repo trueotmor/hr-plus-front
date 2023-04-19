@@ -5,7 +5,7 @@ import Nav from './components/nav/Nav.vue';
 <template>
   <main>
     <Nav />
-    <RouterView />
+    <RouterView class="-mt-20 md:-mt-16" />
   </main>
   <!-- <Catalog title="Мой титул" /> -->
 </template>
