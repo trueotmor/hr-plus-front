@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import Nav from './components/nav/Nav.vue';
+
 </script>
+
+<!-- <template>
+  <v-app>
+    <main>
+      <RouterView />
+    </main>
+  </v-app>
+</template> -->
 
 <template>
   <main>
-    <Nav />
-    <RouterView class="-mt-20 md:-mt-16" />
+    <RouterView />
   </main>
-  <!-- <Catalog title="Мой титул" /> -->
 </template>
 
 <style lang="scss">
