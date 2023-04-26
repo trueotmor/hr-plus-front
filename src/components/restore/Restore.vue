@@ -16,7 +16,9 @@ const handleRestore = async () => {
     router.push('/login');
 }
 
-const disabled = computed(() => !restoreForm.value.email)
+const disabled = computed(() => !restoreForm.value.email);
+const inputStyle = "border peer block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600";
+const labelStyle = "absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1";
 
 </script>
  
@@ -33,15 +35,8 @@ const disabled = computed(() => !restoreForm.value.email)
                         <p class="mb-6 w-full">Мы вышлем вам инструкцию для восстановления доступа к сервису.</p>
                         <form class="w-full" @submit.prevent="handleRestore">
                             <!-- Email input -->
-                            <div class="relative mb-6">
-                                <input type="text" v-model="restoreForm.email" id="restoreFormEmail" autocomplete="off"
-                                    class="border peer block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600"
-                                    placeholder=" " />
-                                <label for="restoreFormEmail"
-                                    class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                                    Ваш E-mail
-                                </label>
-                            </div>
+                            <FormInput v-model="restoreForm.email" label="Ваш E-mail" :labelClass="labelStyle"
+                                :inputClass="inputStyle" inputID="restoreFormEmail" class="mb-6" />
                             <div class="text-center lg:text-left flex flex-col mb-2">
                                 <button type="submit" :disabled='disabled'
                                     class="inline-block rounded bg-blue-700 px-7 py-2 text-white font-medium leading-normal border border-blue-700 hover:border-blue-800 hover:bg-blue-800 transition duration-300 disabled:bg-gray-300 disabled:border-gray-300">

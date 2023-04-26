@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import FormInput from '../form-input/FormInput.vue';
+import useVuelidate from '@vuelidate/core';
+import { required, email, sameAs, minLength, helpers } from '@vuelidate/validators';
 
 const router = useRouter();
 
@@ -12,15 +15,30 @@ const registerForm = ref({
     confirmpassword: '',
 })
 
+const rules = {
+    email: { required: helpers.withMessage('Пожалуйста введите ваш E-mail', required), email: helpers.withMessage('Неверный E-mail', email) },
+    phone: { required: helpers.withMessage('Пожалуйста введите телефон', required) },
+    specifiedpassword: { required: helpers.withMessage('Пожалуйста введите пароль', required) },
+    confirmpassword: { sameAs: sameAs(registerForm.value.specifiedpassword), helpers.withMessage('', sameAs), },
+};
+
+const v$ = useVuelidate(rules, registerForm);
+
 const handleRegister = async () => {
-    await axios.post('/auth/register', {
-        email: registerForm.value.email,
-        phone: registerForm.value.phone,
-        specifiedpassword: registerForm.value.specifiedpassword,
-        confirmpassword: registerForm.value.confirmpassword,
-    });
-    router.push('/');
+    const result = await v$.value.$validate();
+    if (result) {
+        await axios.post('/auth/register', {
+            email: registerForm.value.email,
+            phone: registerForm.value.phone,
+            specifiedpassword: registerForm.value.specifiedpassword,
+            confirmpassword: registerForm.value.confirmpassword,
+        });
+        router.push('/');
+    }
 }
+
+const inputStyle = "border peer block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600";
+const labelStyle = "absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1";
 </script>
 
 <template>
@@ -35,46 +53,44 @@ const handleRegister = async () => {
                         <p class="mb-6 w-full">Введите контакные данные доступа к системе.</p>
                         <form class="w-full" @submit.prevent="handleRegister">
                             <!-- Email input -->
-                            <div class="relative mb-6">
-                                <input type="text" v-model="registerForm.email" id="regiserFormEmail" autocomplete="off"
-                                    class="border peer block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600"
-                                    placeholder=" " />
-                                <label for="regiserFormEmail"
-                                    class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                                    E-mail
-                                </label>
+                            <div class="relative">
+                                <FormInput v-model="registerForm.email" type="email" label="E-mail" :labelClass="labelStyle"
+                                    :inputClass="inputStyle" inputID="registerFormEmail" class="mb-6" />
+                                <span v-for="error in v$.email.$errors" :key="error.$uid"
+                                    class="text-red-500 absolute left-2 top-12 text-xs">
+                                    {{ error.$message }}
+                                </span>
                             </div>
-                            <div class="relative mb-6">
-                                <input type="text" v-model="registerForm.phone" id="regiserFormPhone" autocomplete="off"
-                                    class="border peer block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600"
-                                    placeholder=" " />
-                                <label for="regiserFormPhone"
-                                    class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                                    Ваш телефон
-                                </label>
+                            <!-- Phone input -->
+                            <div class="relative">
+                                <FormInput v-model="registerForm.phone" label="Ваш телефон" :labelClass="labelStyle"
+                                    :inputClass="inputStyle" inputID="registerFormPhone" class="mb-6" />
+                                <span v-for="error in v$.phone.$errors" :key="error.$uid"
+                                    class="text-red-500 absolute left-2 top-12 text-xs">
+                                    {{ error.$message }}
+                                </span>
                             </div>
                             <!-- Specifiedpassword input -->
-                            <div class="relative mb-6">
-                                <input type="text" v-model="registerForm.specifiedpassword" id="regiserFormSPass"
-                                    autocomplete="off"
-                                    class="border peer block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600"
-                                    placeholder=" " />
-                                <label for="regiserFormSPass"
-                                    class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                                    Пароль
-                                </label>
+                            <div class="relative">
+                                <FormInput v-model="registerForm.specifiedpassword" label="Пароль" :labelClass="labelStyle"
+                                    :inputClass="inputStyle" inputID="regiserFormSPass" class="mb-6" />
+                                <span v-for="error in v$.specifiedpassword.$errors" :key="error.$uid"
+                                    class="text-red-500 absolute left-2 top-12 text-xs">
+                                    {{ error.$message }}
+                                </span>
                             </div>
+
                             <!-- Confirmpassword input -->
-                            <div class="relative mb-6">
-                                <input type="text" v-model="registerForm.confirmpassword" id="regiserFormCPass"
-                                    autocomplete="off"
-                                    class="border peer block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600"
-                                    placeholder=" " />
-                                <label for="regiserFormCPass"
-                                    class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                                    Подтвердите пароль
-                                </label>
+                            <div class="relative">
+                                <FormInput v-model="registerForm.confirmpassword" label="Подтвердите пароль"
+                                    :labelClass="labelStyle" :inputClass="inputStyle" inputID="regiserFormСPass"
+                                    class="mb-6" />
+                                <span v-for="error in v$.confirmpassword.$errors" :key="error.$uid"
+                                    class="text-red-500 absolute left-2 top-12 text-xs">
+                                    {{ error.$message }}
+                                </span>
                             </div>
+
                             <!-- Confidential check -->
                             <div class="mb-[0.125rem] block min-h-[1.5rem] pl-[1.5rem]">
                                 <input
@@ -88,7 +104,7 @@ const handleRegister = async () => {
                                     </router-link>
                                 </label>
                             </div>
-                            <!-- CRegister submit -->
+                            <!-- Register submit -->
                             <div class="text-center lg:text-left flex flex-col mb-2">
                                 <button type="submit"
                                     class="inline-block rounded bg-blue-700 px-7 py-2 text-white font-medium leading-normal border border-blue-700 hover:border-blue-800 hover:bg-blue-800 transition duration-300">

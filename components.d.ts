@@ -11,6 +11,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Account: typeof import('./src/components/account/Account.vue')['default']
     AddOrganization: typeof import('./src/components/add-organization/AddOrganization.vue')['default']
+    FormInput: typeof import('./src/components/form-input/FormInput.vue')['default']
     Home: typeof import('./src/components/home/Home.vue')['default']
     IconList: typeof import('./src/components/icons/IconList.vue')['default']
     IMdiCaretDown: typeof import('~icons/mdi/caret-down')['default']

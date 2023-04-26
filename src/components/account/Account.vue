@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import SideBar from '../sidebar/SideBar.vue';
 import Nav from '../nav/Nav.vue'
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
