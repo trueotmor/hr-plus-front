@@ -13,7 +13,11 @@ const registerForm = ref({
     phone: '',
     specifiedpassword: '',
     confirmpassword: '',
-})
+});
+
+const messageFromHost = ref({
+    erros: {},
+});
 
 const rules = {
     email: { required: helpers.withMessage('Пожалуйста введите ваш E-mail', required), email: helpers.withMessage('Неверный E-mail', email) },
@@ -26,19 +30,30 @@ const rules = {
 const v$ = useVuelidate(rules, registerForm);
 
 const handleRegister = async () => {
-    console.log(registerForm.value.specifiedpassword);
-    console.log(registerForm.value.confirmpassword);
     const result = await v$.value.$validate();
     if (result) {
-        await axios.post('/auth/register', {
-            email: registerForm.value.email,
-            // phone: registerForm.value.phone,
-            specifiedpassword: registerForm.value.specifiedpassword,
-            confirmpassword: registerForm.value.confirmpassword,
-        });
-        router.push('/');
-    }
-}
+        try {
+            const data = await axios.post('/auth/register', {
+                email: registerForm.value.email,
+                // phone: registerForm.value.phone,
+                specifiedpassword: registerForm.value.specifiedpassword,
+                confirmpassword: registerForm.value.confirmpassword,
+            });
+            if (!data.data.data.success) {
+                messageFromHost.value.erros = data.data.data.error;
+                console.log(messageFromHost.value);
+
+            } else {
+                messageFromHost.value = data.data.data.message;
+                router.push({ name: 'Login' });
+            };
+        } catch (error) {
+            console.log(error);
+
+        }
+
+    };
+};
 
 const inputStyle = "border peer block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded border-1 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600";
 const labelStyle = "absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1";
@@ -106,6 +121,10 @@ const labelStyle = "absolute text-sm text-gray-500 duration-300 transform -trans
                                         Политикой конфиденциальности и защиты персональных данных
                                     </router-link>
                                 </label>
+                            </div>
+
+                            <div v-if="messageFromHost.message" class="text-red-500 text-xs mb-2 -mt-4">
+                                {{ messageFromHost.message }}
                             </div>
                             <!-- Register submit -->
                             <div class="text-center lg:text-left flex flex-col mb-2">

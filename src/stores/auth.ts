@@ -12,9 +12,12 @@ export const useAuthStore = defineStore('auth', {
     actions: {
         async getToken () {
             const data = await axios.get('/auth/is-auth');
-            if (data.data.data.success) {
+            console.log(this.isAuth);
+            if (data.data.data.success === true) {
+                console.log(data.data.data.success === true);
                 this.isAuth = true;
             };
+            console.log(this.isAuth);
         },
 
         async getUser () {

@@ -1,17 +1,24 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router';
 import FormInput from '../form-input/FormInput.vue';
 import useVuelidate from '@vuelidate/core';
-import { required, minLength, email, helpers } from '@vuelidate/validators';
+import { useAuthStore } from '../../stores/auth';
+import { required, email, helpers } from '@vuelidate/validators';
+import { useRouter } from 'vue-router';
 
-const router = useRouter();
+const authStore = useAuthStore();
 
 const loginForm = ref({
     email: '',
     password: '',
 });
+
+const errorFromHost = ref({
+    message: '',
+});
+
+const router = useRouter();
 
 const rules = {
     email: { required: helpers.withMessage('Пожалуйста введите ваш E-mail', required), email: helpers.withMessage('Неверный E-mail', email) },
@@ -23,14 +30,24 @@ const v$ = useVuelidate(rules, loginForm);
 const handleLogin = async () => {
     const result = await v$.value.$validate();
     if (result) {
-        await axios.post('/auth/login', {
-            username: loginForm.value.email,
-            password: loginForm.value.password,
-        }).then(
-            () => router.push('/')
-        );
+        try {
+            const data = await axios.post('/auth/login', {
+                username: loginForm.value.email,
+                password: loginForm.value.password,
+            });
+            if (!data.data.data.success) {
+                errorFromHost.value.message = data.data.data.message;
+            } else {
+                authStore.isAuth = true;
+                router.push({ name: 'Account' });
+            };
+        } catch (error) {
+            console.log(error);
+        };
     };
 };
+
+
 
 const disabled = computed(() => !loginForm.value.email || !loginForm.value.email);
 
@@ -48,7 +65,7 @@ const inputStyle = "border peer block px-2.5 pb-2.5 pt-4 w-full text-sm text-gra
                     <div class="p-4 h-100 w-full flex justify-center items-start flex-col">
                         <h5 class="mt-8 mb-4 w-full">Авторизация</h5>
                         <p class="mb-6 w-full">Введите e-mail и пароль для доступа к системе.</p>
-                        <form class="w-full" @submit.prevent="handleLogin">
+                        <form class="w-full relative" @submit.prevent="handleLogin">
                             <!-- Email input -->
                             <div class="relative">
                                 <FormInput v-model="loginForm.email" type="email" label="E-mail" :labelClass="labelStyle"
@@ -67,14 +84,12 @@ const inputStyle = "border peer block px-2.5 pb-2.5 pt-4 w-full text-sm text-gra
                                     class="text-red-500 absolute left-2 top-12 text-xs">
                                     {{ error.$message }}
                                 </span>
+                                <div v-if="errorFromHost.message" class="text-red-500 text-xs mb-2 -mt-4">
+                                    {{ errorFromHost.message }}
+                                </div>
                             </div>
                             <!-- Login button || register -->
                             <div class=" text-center lg:text-left flex flex-col mb-2">
-                                <!-- <button type="submit"
-                                    class="inline-block rounded bg-blue-700 px-7 py-2 text-white font-medium leading-normal border border-blue-700 hover:border-blue-800 hover:bg-blue-800 transition duration-300 disabled:bg-gray-300 disabled:border-gray-300"
-                                    :disabled="disabled">
-                                    Вход
-                                </button> -->
                                 <button v-if="loginForm.email && loginForm.password" type="submit"
                                     class="inline-block rounded bg-blue-700 px-7 py-2 text-white font-medium leading-normal border border-blue-700 hover:border-blue-800 hover:bg-blue-800 transition duration-300 disabled:bg-gray-300 disabled:border-gray-300"
                                     :disabled="disabled">
