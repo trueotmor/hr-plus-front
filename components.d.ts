@@ -12,6 +12,7 @@ declare module '@vue/runtime-core' {
     Account: typeof import('./src/components/account/Account.vue')['default']
     AddOrganization: typeof import('./src/components/add-organization/AddOrganization.vue')['default']
     FormInput: typeof import('./src/components/form-input/FormInput.vue')['default']
+    Header: typeof import('./src/components/header/Header.vue')['default']
     Home: typeof import('./src/components/home/Home.vue')['default']
     IconList: typeof import('./src/components/icons/IconList.vue')['default']
     IMdiCaretDown: typeof import('~icons/mdi/caret-down')['default']
@@ -21,6 +22,7 @@ declare module '@vue/runtime-core' {
     Restore: typeof import('./src/components/restore/Restore.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Sidebar: typeof import('./src/components/sidebar/Sidebar.vue')['default']
     SideBar: typeof import('./src/components/sidebar/SideBar.vue')['default']
   }
 }

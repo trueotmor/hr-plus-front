@@ -5,6 +5,9 @@ export default {
     fontFamily: {
       sans: ['Nunito Sans', 'sans-serif'],
     },
-  }
+  },
+  plugins: [
+    require('@headlessui/tailwindcss')({ prefix: 'ui' }),
+  ],
 }
 
